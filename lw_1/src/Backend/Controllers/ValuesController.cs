@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Concurrent;
 
 namespace Backend.Controllers
 {
@@ -10,36 +11,23 @@ namespace Backend.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
+        static readonly ConcurrentDictionary<string, string> _data = new ConcurrentDictionary<string, string>();
+        // GET api/values/<id>
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public string Get(string id)
         {
-            return "value";
+            string value = null;
+            _data.TryGetValue(id, out value);
+            return value;
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public string Post([FromForm]string value)
         {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var id = Guid.NewGuid().ToString();
+            _data[id] = value;
+            return id;
         }
     }
 }
