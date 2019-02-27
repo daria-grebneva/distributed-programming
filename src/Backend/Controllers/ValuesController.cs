@@ -27,6 +27,12 @@ namespace Backend.Controllers
         {
             var id = Guid.NewGuid().ToString();
             _data[id] = value;
+            var db = RedisStore.RedisCache;
+            db.StringSet(id, value);
+            string res = db.StringGet(id);
+            var pub = db.Multiplexer.GetSubscriber();
+            pub.Publish("events", id);
+
             return id;
         }
     }
