@@ -29,7 +29,6 @@ namespace Backend.Controllers
             _data[id] = value;
             var db = RedisStore.RedisCache;
             db.StringSet(id, value);
-            string res = db.StringGet(id);
             var pub = db.Multiplexer.GetSubscriber();
             pub.Publish("events", id);
 
