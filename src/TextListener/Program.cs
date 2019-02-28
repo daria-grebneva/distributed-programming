@@ -7,7 +7,7 @@ namespace TextListener
     {
         static void Main(string[] args)
         {
-            var redis = RedisStore.RedisCache;
+            var redis = RedisStore.RedisDB;
             var sub = redis.Multiplexer.GetSubscriber();
             sub.Subscribe("events", (channel, message) => {
                 Console.WriteLine("IDENTIFICATOR: " + (string)message);

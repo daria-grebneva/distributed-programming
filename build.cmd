@@ -28,23 +28,6 @@ xcopy stop.cmd ..\%DIR_NAME%\
 xcopy Config ..\%DIR_NAME%\Config\
 
 echo finished build
-
-cd ../
-cd %DIR_NAME%/Backend
-start dotnet Backend.dll
-cd ../../ 
-
-cd %DIR_NAME%/Frontend 
-start dotnet Frontend.dll
-cd ../../    
-
-cd %DIR_NAME%/TextListener 
-start dotnet TextListener.dll
-cd ../../  
-
-start "" /wait "http://127.0.0.1:5001/" 
-
-echo process is running
 exit
           
 :WriteArgument
