@@ -8,6 +8,10 @@ cd Frontend
 start dotnet Frontend.dll
 cd ../    
 
+cd TextListener 
+start dotnet TextListener.dll
+cd ../  
+
 start "" /wait "http://127.0.0.1:5001/" 
 
 echo process is running
