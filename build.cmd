@@ -22,6 +22,11 @@ dotnet build --configuration Release --output %DIR_NAME%
 move %DIR_NAME% ../../%DIR_NAME%/TextListener
 cd ../../
 
+cd src/TextRankCalc/                         
+dotnet build --configuration Release --output %DIR_NAME%  
+move %DIR_NAME% ../../%DIR_NAME%/TextRankCalc
+cd ../../ 
+
 cd src/                    
 xcopy run.cmd ..\%DIR_NAME%\
 xcopy stop.cmd ..\%DIR_NAME%\

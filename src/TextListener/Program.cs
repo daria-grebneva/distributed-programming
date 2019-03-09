@@ -13,6 +13,7 @@ namespace TextListener
                 Console.WriteLine("IDENTIFICATOR: " + (string)message);
                 Console.WriteLine("VALUE: " + redis.StringGet((string)message));
             });
+            Console.WriteLine("TextListener");
             Console.ReadLine();
         }
     }
