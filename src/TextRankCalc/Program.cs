@@ -8,6 +8,9 @@ namespace TextRankCalc
     {
         static void Main(string[] args)
         {
+            const string CALCULATE_HINTS_CHANNEL = "calculate_hints";
+            const string CALCULATE_QUEUE_NAME = "calculate_queue";
+
             var db = RedisStore.RedisDB;
             var sub = db.Multiplexer.GetSubscriber();
             sub.Subscribe("events", (channel, message) =>
@@ -16,36 +19,12 @@ namespace TextRankCalc
                 Console.WriteLine("TextCreated: " + id);
                 string str = db.StringGet(id);
 
-                var VOWELS = new List<char>() { 'a', 'i', 'e', 'u', 'o', 'y'};
-                var CONSONANTS = new List<char>() {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'z'};
-
-                int vowelsNum = 0;
-                int consonantsNum = 0;
-                bool err = false;
-
-                foreach (char letter in str)
-                {
-                    if (VOWELS.Contains(letter))
-                    {
-                        ++vowelsNum;
-                    }
-                    else if (CONSONANTS.Contains(letter))
-                    {
-                        ++consonantsNum;
-                    }
-                    else
-                    {
-                        err = true;
-                        Console.WriteLine("something wrong with your word");                    
-                    }
-                }
-                if (!err)
-                {
-                    double letterRatio = (consonantsNum == 0) ? 0 : (double)vowelsNum / (double)consonantsNum;
-                    db.StringSet("TextRank_" + id, letterRatio);
-                }
-                Console.WriteLine("Value: " + str);
+                 // put message to queue
+                db.ListLeftPush( CALCULATE_QUEUE_NAME, str, flags: CommandFlags.FireAndForget );
+                // and notify consumers
+                db.Multiplexer.GetSubscriber().Publish( CALCULATE_HINTS_CHANNEL, "" );
             });
+            
             Console.WriteLine("TextRankCalc");
             Console.ReadLine();
         }
