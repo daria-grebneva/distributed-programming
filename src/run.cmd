@@ -12,6 +12,10 @@ cd TextListener
 start dotnet TextListener.dll
 cd ../  
 
+cd TextRankCalc 
+start dotnet TextRankCalc.dll
+cd ../  
+
 start "" /wait "http://127.0.0.1:5001/" 
 
 echo process is running

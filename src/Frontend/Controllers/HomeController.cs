@@ -28,6 +28,17 @@ namespace Frontend.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> TextDetails(string id)
+        {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync($"http://localhost:5000/api/values/{id}");
+            string letterRatio =  await response.Content.ReadAsStringAsync();
+            ViewData["letterRatio"] = letterRatio;
+
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Upload(string data)
         {
@@ -38,14 +49,10 @@ namespace Frontend.Controllers
                 new MediaTypeWithQualityHeaderValue("application/json"));
             
             //TODO: send data in POST request to backend and read returned id value from response
-            FormUrlEncodedContent content = new FormUrlEncodedContent(new[] 
-            { 
-                new KeyValuePair<string, string>("value", data) 
-            });
-            var response = await client.PostAsync("api/values", content);
-            string id = await response.Content.ReadAsStringAsync();
+            var response = await client.PostAsJsonAsync("api/values", data);
+            string id = await response.Content.ReadAsAsync<string>();
             
-            return Ok(id);
+            return Redirect("TextDetails/" + id);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
