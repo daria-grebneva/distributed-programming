@@ -21,7 +21,7 @@ namespace TextRankCalc
                 string str = db.StringGet(id);
 
                  // put message to queue
-                db.ListLeftPush( CALCULATE_QUEUE_NAME, str, flags: CommandFlags.FireAndForget );
+                db.ListLeftPush( CALCULATE_QUEUE_NAME,  $"{id}:{str}", flags: CommandFlags.FireAndForget );
                 // and notify consumers
                 db.Multiplexer.GetSubscriber().Publish( CALCULATE_HINTS_CHANNEL, "" );
             });

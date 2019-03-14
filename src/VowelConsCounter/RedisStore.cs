@@ -2,7 +2,7 @@ using StackExchange.Redis;
 using System;
 using System.Configuration;
 
-namespace TextRankCalc
+namespace VowelConsCounter
 {
     public class RedisStore
     {

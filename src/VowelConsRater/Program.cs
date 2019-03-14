@@ -17,12 +17,12 @@ namespace VowelConsRater
             {
                 // process all messages in queue
                 string msg = db.ListRightPop(COUNTER_QUEUE_NAME);
-                    Console.WriteLine(msg);
+                Console.WriteLine(msg);
                 while (msg != null)
                 {
                     string id = msg.Split(':')[0];
-                    int vowelsNum = Convert.ToInt64(msg.Split(':')[1]);
-                    int consonantsNum = Convert.ToInt64(msg.Split(':')[2]);
+                    double vowelsNum = Convert.ToDouble(msg.Split(':')[1]);
+                    double consonantsNum = Convert.ToDouble(msg.Split(':')[2]);
                     double letterRatio = consonantsNum == 0 ? 0 : vowelsNum / consonantsNum;
 
                     db.StringSet("TextRank_" + id, letterRatio);

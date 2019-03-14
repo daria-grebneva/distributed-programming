@@ -56,7 +56,7 @@ namespace VowelConsCounter
                 }
             });
             
-            Console.WriteLine("VovelConsRater");
+            Console.WriteLine("VovelConsCounter");
             Console.ReadLine();
         }
         private static void DoJob( string jobData )
