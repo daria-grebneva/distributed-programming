@@ -27,14 +27,14 @@ dotnet build --configuration Release --output %DIR_NAME%
 move %DIR_NAME% ../../%DIR_NAME%/TextRankCalc
 cd ../../ 
 
-cd src/VovelConsRater/                         
+cd src/VowelConsRater/                         
 dotnet build --configuration Release --output %DIR_NAME%  
-move %DIR_NAME% ../../%DIR_NAME%/VovelConsRater
+move %DIR_NAME% ../../%DIR_NAME%/VowelConsRater
 cd ../../ 
 
-cd src/VovelConsCounter/                         
+cd src/VowelConsCounter/                         
 dotnet build --configuration Release --output %DIR_NAME%  
-move %DIR_NAME% ../../%DIR_NAME%/VovelConsCounter
+move %DIR_NAME% ../../%DIR_NAME%/VowelConsCounter
 cd ../../ 
 
 cd src/                    

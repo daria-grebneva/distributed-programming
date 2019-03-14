@@ -16,12 +16,12 @@ cd TextRankCalc
 start dotnet TextRankCalc.dll
 cd ../  
 
-cd VovelConsRater 
-start dotnet VovelConsRater.dll
+cd VowelConsRater 
+start dotnet VowelConsRater.dll
 cd ../  
 
-cd VovelConsCounter 
-start dotnet VovelConsCounter.dll
+cd VowelConsCounter 
+start dotnet VowelConsCounter.dll
 cd ../  
 
 start "" /wait "http://127.0.0.1:5001/" 
