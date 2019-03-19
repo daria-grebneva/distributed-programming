@@ -5,7 +5,7 @@ set DIR_NAME=%1
 
 if exist %DIR_NAME% goto ErrWithBuildNumber
 
-mkdir %DIR_NAME%
+mkdir %DIR_NAME%                                     
 
 cd src/Frontend/                         
 dotnet build --configuration Release --output %DIR_NAME%
