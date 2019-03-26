@@ -5,7 +5,7 @@ set DIR_NAME=%1
 
 if exist %DIR_NAME% goto ErrWithBuildNumber
 
-mkdir %DIR_NAME%
+mkdir %DIR_NAME%                                     
 
 cd src/Frontend/                         
 dotnet build --configuration Release --output %DIR_NAME%
@@ -25,6 +25,16 @@ cd ../../
 cd src/TextRankCalc/                         
 dotnet build --configuration Release --output %DIR_NAME%  
 move %DIR_NAME% ../../%DIR_NAME%/TextRankCalc
+cd ../../ 
+
+cd src/VowelConsRater/                         
+dotnet build --configuration Release --output %DIR_NAME%  
+move %DIR_NAME% ../../%DIR_NAME%/VowelConsRater
+cd ../../ 
+
+cd src/VowelConsCounter/                         
+dotnet build --configuration Release --output %DIR_NAME%  
+move %DIR_NAME% ../../%DIR_NAME%/VowelConsCounter
 cd ../../ 
 
 cd src/                    

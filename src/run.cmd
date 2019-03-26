@@ -1,20 +1,25 @@
 @echo off
 
 cd Backend
-start dotnet Backend.dll
+start "Backend" dotnet Backend.dll
 cd ../ 
 
 cd Frontend 
-start dotnet Frontend.dll
+start "Frontend" dotnet Frontend.dll
 cd ../    
 
 cd TextListener 
-start dotnet TextListener.dll
+start "TextListener" dotnet TextListener.dll
 cd ../  
 
 cd TextRankCalc 
-start dotnet TextRankCalc.dll
+start "TextRankCalc" dotnet TextRankCalc.dll
 cd ../  
+                                          
+set file=%CD%\Config\config.ini
+for /f "tokens=1,2 delims=:" %%a in (%file%) do (
+	for /l %%i in (1, 1, %%b) do start "%%a" /d %%a dotnet %%a.dll
+)
 
 start "" /wait "http://127.0.0.1:5001/" 
 
