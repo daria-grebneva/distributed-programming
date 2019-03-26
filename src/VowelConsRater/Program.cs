@@ -7,16 +7,16 @@ namespace VowelConsRater
 {
     class Program
     { 
-        const string COUNTER_HINTS_CHANNEL = "counter_hints";
-        const string COUNTER_QUEUE_NAME = "counter_queue";
+        const string RATER_HINTS_CHANNEL = "rater_hints";
+        const string RATER_QUEUE_NAME = "rater_queue";
         static void Main(string[] args)
         {
             var db = RedisStore.RedisDB;
             var sub = db.Multiplexer.GetSubscriber();   
-            sub.Subscribe(COUNTER_HINTS_CHANNEL, delegate
+            sub.Subscribe(RATER_HINTS_CHANNEL, delegate
             {
                 // process all messages in queue
-                string msg = db.ListRightPop(COUNTER_QUEUE_NAME);
+                string msg = db.ListRightPop(RATER_QUEUE_NAME);
                 Console.WriteLine(msg);
                 while (msg != null)
                 {
@@ -27,7 +27,7 @@ namespace VowelConsRater
 
                     db.StringSet("TextRank_" + id, letterRatio);
 
-                    msg = db.ListRightPop(COUNTER_QUEUE_NAME);
+                    msg = db.ListRightPop(RATER_QUEUE_NAME);
                 }
             });
             Console.WriteLine("VovelConsRater");

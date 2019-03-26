@@ -7,17 +7,17 @@ namespace VowelConsCounter
 {
     class Program
     {
-        const string CALCULATE_HINTS_CHANNEL = "calculate_hints";
-        const string CALCULATE_QUEUE_NAME = "calculate_queue";
         const string COUNTER_HINTS_CHANNEL = "counter_hints";
         const string COUNTER_QUEUE_NAME = "counter_queue";
+        const string RATER_HINTS_CHANNEL = "rater_hints";
+        const string RATER_QUEUE_NAME = "rater_queue";
         static void Main(string[] args)
         {
             var db = RedisStore.RedisDB;
             var sub = db.Multiplexer.GetSubscriber();   
-            sub.Subscribe(CALCULATE_HINTS_CHANNEL, delegate
+            sub.Subscribe(COUNTER_HINTS_CHANNEL, delegate
             {
-                string msg = db.ListRightPop(CALCULATE_QUEUE_NAME);
+                string msg = db.ListRightPop(COUNTER_QUEUE_NAME);
                 Console.WriteLine(msg);
                 while (msg != null)
                 {
@@ -48,11 +48,11 @@ namespace VowelConsCounter
                     }
                     
                     // put message to queue
-                    db.ListLeftPush(COUNTER_QUEUE_NAME, $"{id}:{vowelsNum}:{consonantsNum}", flags: CommandFlags.FireAndForget);
+                    db.ListLeftPush(RATER_QUEUE_NAME, $"{id}:{vowelsNum}:{consonantsNum}", flags: CommandFlags.FireAndForget);
                     // and notify consumers
-                    db.Multiplexer.GetSubscriber().Publish(COUNTER_HINTS_CHANNEL, "");
+                    db.Multiplexer.GetSubscriber().Publish(RATER_HINTS_CHANNEL, "");
 
-                    msg = db.ListRightPop(CALCULATE_QUEUE_NAME);
+                    msg = db.ListRightPop(COUNTER_QUEUE_NAME);
                 }
             });
             
