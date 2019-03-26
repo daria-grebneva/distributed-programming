@@ -9,8 +9,8 @@ namespace TextRankCalc
     {
         static void Main(string[] args)
         {
-            const string CALCULATE_HINTS_CHANNEL = "calculate_hints";
-            const string CALCULATE_QUEUE_NAME = "calculate_queue";
+            const string COUNTER_HINTS_CHANNEL = "counter_hints";
+            const string COUNTER_QUEUE_NAME = "counter_queue";
 
             var db = RedisStore.RedisDB;
             var sub = db.Multiplexer.GetSubscriber();
@@ -21,9 +21,9 @@ namespace TextRankCalc
                 string str = db.StringGet(id);
 
                  // put message to queue
-                db.ListLeftPush( CALCULATE_QUEUE_NAME,  $"{id}:{str}", flags: CommandFlags.FireAndForget );
+                db.ListLeftPush( COUNTER_QUEUE_NAME,  $"{id}:{str}", flags: CommandFlags.FireAndForget );
                 // and notify consumers
-                db.Multiplexer.GetSubscriber().Publish( CALCULATE_HINTS_CHANNEL, "" );
+                db.Multiplexer.GetSubscriber().Publish( COUNTER_HINTS_CHANNEL, "" );
             });
             
             Console.WriteLine("TextRankCalc");
