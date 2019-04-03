@@ -33,15 +33,16 @@ namespace Frontend.Controllers
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync($"http://localhost:5000/api/values/{id}");
-            string letterRatio =  await response.Content.ReadAsStringAsync();
-            ViewData["letterRatio"] = letterRatio;
+            string data =  await response.Content.ReadAsStringAsync();
+            ViewData["data"] = data;
 
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload(string data)
+        public async Task<IActionResult> Upload(string data, string region)
         {
+             Console.WriteLine("Data: " + data + " Region: " + region);
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5000/");
             client.DefaultRequestHeaders.Accept.Clear();
@@ -49,7 +50,8 @@ namespace Frontend.Controllers
                 new MediaTypeWithQualityHeaderValue("application/json"));
             
             //TODO: send data in POST request to backend and read returned id value from response
-            var response = await client.PostAsJsonAsync("api/values", data);
+            string uploadData = $"{data}:{region}";
+            var response = await client.PostAsJsonAsync("api/values", uploadData);
             string id = await response.Content.ReadAsAsync<string>();
             
             return Redirect("TextDetails/" + id);

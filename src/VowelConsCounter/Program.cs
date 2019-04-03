@@ -11,12 +11,18 @@ namespace VowelConsCounter
         const string COUNTER_QUEUE_NAME = "counter_queue";
         const string RATER_HINTS_CHANNEL = "rater_hints";
         const string RATER_QUEUE_NAME = "rater_queue";
+        private static string REDIS_HOST = "127.0.0.1:6379";
+        public enum DataBasesNumber
+        {
+            QUEUE_DB = 4,
+        }
         static void Main(string[] args)
         {
-            var db = RedisStore.RedisDB;
-            var sub = db.Multiplexer.GetSubscriber();   
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);  
+            ISubscriber sub = redis.GetSubscriber();
             sub.Subscribe(COUNTER_HINTS_CHANNEL, delegate
             {
+                IDatabase db = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
                 string msg = db.ListRightPop(COUNTER_QUEUE_NAME);
                 Console.WriteLine(msg);
                 while (msg != null)
@@ -58,16 +64,6 @@ namespace VowelConsCounter
             
             Console.WriteLine("VovelConsCounter");
             Console.ReadLine();
-        }
-        private static void DoJob( string jobData )
-        {
-            Console.WriteLine( $"Job data: {jobData}" );
-            System.Threading.Thread.Sleep(1500); // emulate loading
-        }
-
-        private static string ParseData( string msg )
-        {
-            return msg.Split( ':' )[1];
         }
 
     }
