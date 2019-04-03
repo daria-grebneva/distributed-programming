@@ -24,12 +24,12 @@ namespace TextRankCalc
             {
                 string msg = message.ToString();
                 string id = msg.Split(':')[0];
-                string str = msg.Split(':')[1];
+                string region = RedisDB.StringGet(id);               
 
-                Console.WriteLine("TextCreated: " + id + " " + str);
+                Console.WriteLine("TextCreated: " + id + " Region: " + region);
                 
                  // put message to queue
-                RedisDB.ListLeftPush( COUNTER_QUEUE_NAME,  $"{id}:{str}", flags: CommandFlags.FireAndForget );
+                RedisDB.ListLeftPush( COUNTER_QUEUE_NAME,  $"{id}:{region}", flags: CommandFlags.FireAndForget );
                 // and notify consumers
                 RedisDB.Multiplexer.GetSubscriber().Publish( COUNTER_HINTS_CHANNEL, "" );
             });

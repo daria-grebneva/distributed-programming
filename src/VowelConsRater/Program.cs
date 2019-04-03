@@ -30,34 +30,18 @@ namespace VowelConsRater
                 {
                     string id = msg.Split(':')[0];                    
 
-                    int letterRatio =  (Convert.ToInt32(msg.Split(':')[2])) / (Convert.ToInt32(msg.Split(':')[1]));
+                    double letterRatio =  (Convert.ToDouble(msg.Split(':')[2])) / (Convert.ToDouble(msg.Split(':')[1]));
                     string region = redisQueue.StringGet(id);
-                    int regionNumber = GetDBRegion(region);
 
-                    IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(regionNumber));
+                    IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(region));
                     redisDb.StringSet(id, letterRatio);
-                    Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " - saved to redis. Database: " + regionNumber + " - " + region);
+                    Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " Database: " + region);
                     
                     msg = redisQueue.ListRightPop(RATER_QUEUE_NAME);
                 }
             });
             Console.WriteLine("VovelConsRater");
             Console.ReadLine();
-        }
-
-        public static int GetDBRegion(string id)
-        {
-            switch (id.ToLower())
-            {
-                case "eu":
-                    return 1;
-                case "rus":
-                    return 2;
-                case "us":
-                    return 3;
-                default:
-                    return 0;
-            }
         }
     }
 }

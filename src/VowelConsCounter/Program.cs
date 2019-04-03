@@ -24,11 +24,15 @@ namespace VowelConsCounter
             {
                 IDatabase db = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
                 string msg = db.ListRightPop(COUNTER_QUEUE_NAME);
-                Console.WriteLine(msg);
                 while (msg != null)
                 {
                     string id = msg.Split(':')[0];
-                    string str = msg.Split(':')[1];
+                    string region = db.StringGet(id);
+                    Console.WriteLine("Region: " + region);
+                    
+                    var regionDb = ConnectionMultiplexer.Connect(REDIS_HOST).GetDatabase(Convert.ToInt32(region));
+                    
+                    string str = regionDb.StringGet(id);
                     var VOWELS = new List<char>() { 'a', 'i', 'e', 'u', 'o', 'y'};
                     var CONSONANTS = new List<char>() {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'z'};
 
@@ -65,6 +69,5 @@ namespace VowelConsCounter
             Console.WriteLine("VovelConsCounter");
             Console.ReadLine();
         }
-
     }
 }

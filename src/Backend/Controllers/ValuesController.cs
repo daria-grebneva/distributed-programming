@@ -32,7 +32,7 @@ namespace Backend.Controllers
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);
             IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
             string region = queueDb.StringGet("TextRank_" + id);
-            IDatabase redisDb = redis.GetDatabase(GetDBRegion(region));
+            IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(region));
             
             for (int i = 0; i < 5; i++)
             {
@@ -49,7 +49,7 @@ namespace Backend.Controllers
                 }
             }
 
-            string data = "letterRatio: " + value + " Region: " + region;
+            string data = "letterRatio: " + value + " Region: " + GetDBRegionString(Convert.ToInt32(region));
 
             return data;
         }
@@ -61,19 +61,19 @@ namespace Backend.Controllers
             var id = Guid.NewGuid().ToString();
             
             string message = value.Split(':')[0];
-            string region = value.Split(':')[1];
+            int region = GetDBRegion(value.Split(':')[1]);
             string textId = "TextRank_" + id;
             
-            var redisDb = ConnectionMultiplexer.Connect(REDIS_HOST).GetDatabase(GetDBRegion(region));
+            var redisDb = ConnectionMultiplexer.Connect(REDIS_HOST).GetDatabase(region);
             redisDb.StringSet(textId, message);
 
             var queueDb = ConnectionMultiplexer.Connect(REDIS_HOST).GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
             queueDb.StringSet(textId, region);
 
-            Console.WriteLine(textId + ": " + " Message: " + message + " Region: " + region + " : " + GetDBRegion(region));
+            Console.WriteLine(textId + ": " + " Message: " + message + " Region: " + region );
             
             ISubscriber sub = ConnectionMultiplexer.Connect(REDIS_HOST).GetSubscriber();
-            sub.Publish("events", $"{textId}:{message}");
+            sub.Publish("events", $"{textId}:");
 
             return id;
         }
@@ -89,6 +89,21 @@ namespace Backend.Controllers
                     return 3;
                 default:
                     return 0;
+            }
+        }
+
+        private static string GetDBRegionString(int id)
+        {
+            switch (id)
+            {
+                case 1:
+                    return "eu";
+                case 2:
+                    return "rus";
+                case 3:
+                    return "us";
+                default:
+                    return "";
             }
         }
     }
