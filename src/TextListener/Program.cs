@@ -9,11 +9,13 @@ namespace TextListener
         static void Main(string[] args)
         {
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);
-            IDatabase RedisDB = redis.GetDatabase();
-            var sub = RedisDB.Multiplexer.GetSubscriber();
+            var sub = redis.GetSubscriber();
             sub.Subscribe("events", (channel, message) => {
-                Console.WriteLine("IDENTIFICATOR: " + (string)message);
-                Console.WriteLine("VALUE: " + RedisDB.StringGet((string)message));
+                string msg = message.ToString();
+                string id = msg.Split(':')[0];
+                string str = msg.Split(':')[1];
+                Console.WriteLine("IDENTIFICATOR: " + id);
+                Console.WriteLine("VALUE: " + str);
             });
             Console.WriteLine("TextListener");
             Console.ReadLine();

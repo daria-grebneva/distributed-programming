@@ -30,13 +30,13 @@ namespace VowelConsRater
                 {
                     string id = msg.Split(':')[0];                    
 
-                    string letterRatio =  msg.Split(':')[1];
-                    string location = redisQueue.StringGet(id);
-                    int regionNumber = GetDBRegion(location);
+                    int letterRatio =  (Convert.ToInt32(msg.Split(':')[2])) / (Convert.ToInt32(msg.Split(':')[1]));
+                    string region = redisQueue.StringGet(id);
+                    int regionNumber = GetDBRegion(region);
 
                     IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(regionNumber));
                     redisDb.StringSet(id, letterRatio);
-                    Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " - saved to redis. Database: " + regionNumber + " - " + location);
+                    Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " - saved to redis. Database: " + regionNumber + " - " + region);
                     
                     msg = redisQueue.ListRightPop(RATER_QUEUE_NAME);
                 }

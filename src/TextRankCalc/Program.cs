@@ -18,14 +18,15 @@ namespace TextRankCalc
         {
 
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);
-            IDatabase RedisDB = redis.GetDatabase();
+            IDatabase RedisDB = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
             var sub = RedisDB.Multiplexer.GetSubscriber();
             sub.Subscribe("events", (channel, message) =>
             {
-                string id = (string)message;
-                Console.WriteLine("TextCreated: " + id);
-                string str = RedisDB.StringGet(id);
-                RedisDB = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
+                string msg = message.ToString();
+                string id = msg.Split(':')[0];
+                string str = msg.Split(':')[1];
+
+                Console.WriteLine("TextCreated: " + id + " " + str);
                 
                  // put message to queue
                 RedisDB.ListLeftPush( COUNTER_QUEUE_NAME,  $"{id}:{str}", flags: CommandFlags.FireAndForget );
