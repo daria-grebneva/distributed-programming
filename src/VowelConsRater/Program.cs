@@ -5,29 +5,39 @@ using StackExchange.Redis;
 
 namespace VowelConsRater
 {
+    public enum DataBasesNumber
+    {
+        QUEUE_DB = 4,
+    }
     class Program
     { 
+        private static string REDIS_HOST = "127.0.0.1:6379";
         const string RATER_HINTS_CHANNEL = "rater_hints";
         const string RATER_QUEUE_NAME = "rater_queue";
         static void Main(string[] args)
         {
-            var db = RedisStore.RedisDB;
-            var sub = db.Multiplexer.GetSubscriber();   
+            
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);
+            IDatabase RedisDB = redis.GetDatabase();
+            var sub = RedisDB.Multiplexer.GetSubscriber();   
             sub.Subscribe(RATER_HINTS_CHANNEL, delegate
             {
+                IDatabase redisQueue = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
                 // process all messages in queue
-                string msg = db.ListRightPop(RATER_QUEUE_NAME);
+                string msg = redisQueue.ListRightPop(RATER_QUEUE_NAME);
                 Console.WriteLine(msg);
                 while (msg != null)
                 {
-                    string id = msg.Split(':')[0];
-                    double vowelsNum = Convert.ToDouble(msg.Split(':')[1]);
-                    double consonantsNum = Convert.ToDouble(msg.Split(':')[2]);
-                    double letterRatio = consonantsNum == 0 ? 0 : vowelsNum / consonantsNum;
+                    string id = msg.Split(':')[0];                    
 
-                    db.StringSet("TextRank_" + id, letterRatio);
+                    double letterRatio =  (Convert.ToDouble(msg.Split(':')[2])) / (Convert.ToDouble(msg.Split(':')[1]));
+                    string region = redisQueue.StringGet(id);
 
-                    msg = db.ListRightPop(RATER_QUEUE_NAME);
+                    IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(region));
+                    redisDb.StringSet(id, letterRatio);
+                    Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " Database: " + region);
+                    
+                    msg = redisQueue.ListRightPop(RATER_QUEUE_NAME);
                 }
             });
             Console.WriteLine("VovelConsRater");
