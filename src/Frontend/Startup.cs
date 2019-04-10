@@ -62,6 +62,10 @@ namespace Frontend
                 routes.MapRoute(
                     name: "text",
                     template: "{controller=Home}/{action=TextDetails}/{id?}");
+                
+                routes.MapRoute(
+                    name: "info",
+                    template: "{controller=StatisticsController}/{action=TextStatistics}");
             });
         }
     }

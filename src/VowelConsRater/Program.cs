@@ -14,6 +14,7 @@ namespace VowelConsRater
         private static string REDIS_HOST = "127.0.0.1:6379";
         const string RATER_HINTS_CHANNEL = "rater_hints";
         const string RATER_QUEUE_NAME = "rater_queue";
+        const string RATER_CALCULATED_CHANNEL = "text_rank_calculated";
         static void Main(string[] args)
         {
             
@@ -30,7 +31,11 @@ namespace VowelConsRater
                 {
                     string id = msg.Split(':')[0];                    
 
-                    double letterRatio =  (Convert.ToDouble(msg.Split(':')[2])) / (Convert.ToDouble(msg.Split(':')[1]));
+                    double consonants = Convert.ToDouble(msg.Split(':')[2]);
+                    double vowel = Convert.ToDouble(msg.Split(':')[1]);
+                    Console.WriteLine(id + ": " + "vowel: " + vowel + " consonants: " + consonants);
+
+                    double letterRatio = (consonants == 0) ? vowel : vowel / consonants ;
                     string region = redisQueue.StringGet(id);
 
                     IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(region));
@@ -38,6 +43,7 @@ namespace VowelConsRater
                     Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " Database: " + region);
                     
                     msg = redisQueue.ListRightPop(RATER_QUEUE_NAME);
+                    sub.Publish(RATER_CALCULATED_CHANNEL, $"{id}:{letterRatio}");
                 }
             });
             Console.WriteLine("VovelConsRater");
