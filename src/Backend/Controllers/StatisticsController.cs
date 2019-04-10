@@ -19,18 +19,22 @@ namespace Backend.Controllers
         [HttpGet("{text_statistics}")]
         public IActionResult Get()
         {
+            string value = null;
+
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);
-            IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
-            for (short i = 0; i < 5; ++i)
+            IDatabase db = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
+
+            for (int i = 0; i < 5; ++i)
             {
-                string statistic = queueDb.StringGet("text_statistics");
-                if (String.IsNullOrEmpty(statistic))
+                value = db.StringGet("text_statistics");
+
+                if (value == null)
                 {
-                    Thread.Sleep(200);
+                    Thread.Sleep(300);
                 }
                 else
                 {
-                    return Ok(statistic);
+                    return Ok(value);
                 }
             }
 
