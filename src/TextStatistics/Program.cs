@@ -13,7 +13,8 @@ namespace TextStatistics
         }
         private static string REDIS_HOST = "127.0.0.1:6379";
 
-        const string RATER_CALCULATED_CHANNEL = "text_rank_calculated";
+        const string RATER_CALCULATED_CHANNEL = "text_rank_calculated_hints";
+        const string RATER_CALCULATED_NAME = "text_rank_calculated_queue";
 
         private static int textNum = 0;
 
@@ -44,7 +45,7 @@ namespace TextStatistics
 
                 avgRank = result / textNum;
 
-                string resultMessage = "TextNum: " + textNum + ", HighRankPart: " + highRankPart + ", AvgRank: " +
+                string resultMessage = "TextNum: " + textNum + "\n HighRankPart: " + highRankPart + "\n AvgRank: " +
                                         avgRank;
 
                 var redisDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));

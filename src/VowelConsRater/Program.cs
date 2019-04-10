@@ -14,7 +14,8 @@ namespace VowelConsRater
         private static string REDIS_HOST = "127.0.0.1:6379";
         const string RATER_HINTS_CHANNEL = "rater_hints";
         const string RATER_QUEUE_NAME = "rater_queue";
-        const string RATER_CALCULATED_CHANNEL = "text_rank_calculated";
+        const string RATER_CALCULATED_CHANNEL = "text_rank_calculated_hints";
+        const string RATER_CALCULATED_NAME = "text_rank_calculated_queue";
         static void Main(string[] args)
         {
             

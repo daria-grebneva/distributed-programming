@@ -24,21 +24,9 @@ namespace Backend.Controllers
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(REDIS_HOST);
             IDatabase db = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
 
-            for (int i = 0; i < 5; ++i)
-            {
-                value = db.StringGet("text_statistics");
+            value = db.StringGet("text_statistics");
 
-                if (value == null)
-                {
-                    Thread.Sleep(300);
-                }
-                else
-                {
-                    return Ok(value);
-                }
-            }
-
-            return new NotFoundResult();
+            return Ok(value);
         }
 
         // POST api/statistic
