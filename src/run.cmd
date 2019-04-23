@@ -15,6 +15,11 @@ cd ../
 cd TextRankCalc 
 start "TextRankCalc" dotnet TextRankCalc.dll
 cd ../  
+
+cd TextStatistics
+start "TextStatistics" dotnet TextStatistics.dll
+cd ../  
+
                                           
 set file=%CD%\Config\config.ini
 for /f "tokens=1,2 delims=:" %%a in (%file%) do (

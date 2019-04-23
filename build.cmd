@@ -37,6 +37,11 @@ dotnet build --configuration Release --output %DIR_NAME%
 move %DIR_NAME% ../../%DIR_NAME%/VowelConsCounter
 cd ../../ 
 
+cd src/TextStatistics/                         
+dotnet build --configuration Release --output %DIR_NAME%  
+move %DIR_NAME% ../../%DIR_NAME%/TextStatistics
+cd ../../ 
+
 cd src/                    
 xcopy run.cmd ..\%DIR_NAME%\
 xcopy stop.cmd ..\%DIR_NAME%\
