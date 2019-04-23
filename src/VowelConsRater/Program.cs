@@ -44,7 +44,7 @@ namespace VowelConsRater
                     Console.WriteLine(id + ": " + "letterRatio: " + letterRatio + " Database: " + region);
                     
                     msg = redisQueue.ListRightPop(RATER_QUEUE_NAME);
-                    sub.Publish(RATER_CALCULATED_CHANNEL, $"{id}:{letterRatio}");
+                    sub.Publish("events", $"{"Statistic: " + id}:{letterRatio}");
                 }
             });
             Console.WriteLine("VovelConsRater");

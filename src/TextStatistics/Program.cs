@@ -30,10 +30,13 @@ namespace TextStatistics
             IDatabase RedisDB = redis.GetDatabase();
             var sub = RedisDB.Multiplexer.GetSubscriber();   
 
-            sub.Subscribe(RATER_CALCULATED_CHANNEL, (channel, message) =>
+            sub.Subscribe("events", (channel, message) =>
             {
                 string msg = message;
+                
                 string value = msg.Split(':')[1];
+                Console.WriteLine(value);
+                value = msg.Split(':')[2];
                 result += Convert.ToDouble(value);
 
                 ++textNum;
