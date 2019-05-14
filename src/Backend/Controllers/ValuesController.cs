@@ -33,13 +33,17 @@ namespace Backend.Controllers
             IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
             string region = queueDb.StringGet("TextRank_" + id);
             IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(region));
+            string data = "request limit reached";
             
             for (int i = 0; i < 5; i++)
             {
                 value = redisDb.StringGet("TextRank_" + id);
+                double res;
+                bool isDouble = Double.TryParse(value, out res);
 
-                if (value != null)
+                if (value != null && isDouble)
                 {
+                    data = "letterRatio: " + value + " Region: " + GetDBRegionString(Convert.ToInt32(region));
                     break;
                 }
                 else
@@ -47,9 +51,9 @@ namespace Backend.Controllers
                     value = "Can not get value from database";
                     Thread.Sleep(300);
                 }
+                
             }
 
-            string data = "letterRatio: " + value + " Region: " + GetDBRegionString(Convert.ToInt32(region));
 
             return data;
         }

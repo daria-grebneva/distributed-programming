@@ -24,14 +24,26 @@ namespace TextRankCalc
             {
                 string msg = message.ToString();
                 string id = msg.Split(':')[0];
-                string region = RedisDB.StringGet(id);               
-
-                Console.WriteLine("TextCreated: " + id + " Region: " + region);
+                string successMsg =  msg.Split(':')[1];
+                bool isSuccessful = Convert.ToBoolean(successMsg);
+                if (!isSuccessful)
+                {
+                    Console.WriteLine("Access declined");
+                    return;
+                }
                 
-                 // put message to queue
-                RedisDB.ListLeftPush( COUNTER_QUEUE_NAME,  $"{id}:{region}", flags: CommandFlags.FireAndForget );
-                // and notify consumers
-                RedisDB.Multiplexer.GetSubscriber().Publish( COUNTER_HINTS_CHANNEL, "" );
+                if (id.Contains("TextRank_"))
+                {
+                    Console.WriteLine(msg);
+                    string region = RedisDB.StringGet(id);               
+
+                    Console.WriteLine("TextCreated: " + id + " Region: " + region);
+                    
+                    // put message to queue
+                    RedisDB.ListLeftPush( COUNTER_QUEUE_NAME,  $"{id}:{region}", flags: CommandFlags.FireAndForget );
+                    // and notify consumers
+                    RedisDB.Multiplexer.GetSubscriber().Publish( COUNTER_HINTS_CHANNEL, "" );
+                }
             });
             
             Console.WriteLine("TextRankCalc");

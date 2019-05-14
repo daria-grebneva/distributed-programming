@@ -20,9 +20,12 @@ namespace TextStatistics
 
         private static int highRankPart = 0;
 
+        private static int rejectedRequestsNumber = 0;
         private static double avgRank = 0;
 
         private static double result = 0;
+
+
         
         static void Main(string[] args)
         {        
@@ -33,29 +36,50 @@ namespace TextStatistics
             sub.Subscribe("events", (channel, message) =>
             {
                 string msg = message;
-                
-                string value = msg.Split(':')[1];
-                Console.WriteLine(value);
-                value = msg.Split(':')[2];
-                result += Convert.ToDouble(value);
-
-                ++textNum;
-
-                if (Convert.ToDouble(value) > 0.5)
+                if (msg.Contains("TextRank_"))
                 {
-                    ++highRankPart;
+                    if (msg.Split(":")[1] == "")
+                    {
+                        return;
+                    }
+
+                    bool isSuccessful = Convert.ToBoolean(msg.Split(":")[1]);
+                    if (!isSuccessful)
+                    {
+                        rejectedRequestsNumber++;
+                        string resultMessage = "TextNum: " + textNum + "\n HighRankPart: " + highRankPart + "\n AvgRank: " +
+                                                avgRank + "\nRejectedRequestsNum: " + rejectedRequestsNumber;
+
+                        var redisDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
+                        redisDb.StringSet("text_statistics", resultMessage);
+                    }
                 }
 
-                avgRank = result / textNum;
+                if (msg.Contains("Statistic_"))
+                {                   
+                    string value = msg.Split(':')[0];
+                    Console.WriteLine(value);
+                    value = msg.Split(':')[1];
+                    result += Convert.ToDouble(value);
 
-                string resultMessage = "TextNum: " + textNum + "\n HighRankPart: " + highRankPart + "\n AvgRank: " +
-                                        avgRank;
+                    ++textNum;
 
-                var redisDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
-                redisDb.StringSet("text_statistics", resultMessage);
+                    if (Convert.ToDouble(value) > 0.5)
+                    {
+                        ++highRankPart;
+                    }
+
+                    avgRank = result / textNum;
+
+                    string resultMessage = "TextNum: " + textNum + "\n HighRankPart: " + highRankPart + "\n AvgRank: " +
+                                                avgRank + "\nRejectedRequestsNum: " + rejectedRequestsNumber;
+
+                    var redisDb = redis.GetDatabase(Convert.ToInt32(DataBasesNumber.QUEUE_DB));
+                    redisDb.StringSet("text_statistics", resultMessage);
+                    
+                    Console.WriteLine(resultMessage);
+                }
                 
-                Console.WriteLine(resultMessage);
-
             });
             
             Console.ReadLine();

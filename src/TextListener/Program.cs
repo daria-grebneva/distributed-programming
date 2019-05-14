@@ -18,13 +18,17 @@ namespace TextListener
             sub.Subscribe("events", (channel, message) => {
                 string msg = message.ToString();
                 string id = msg.Split(':')[0];
-                string region = redisQueue.StringGet(id);
-                var regionDb = ConnectionMultiplexer.Connect(REDIS_HOST).GetDatabase(Convert.ToInt32(region));
-                
-                string text = regionDb.StringGet(id);
-                Console.WriteLine("IDENTIFICATOR: " + id);
-                Console.WriteLine("REGION: " + region);
-                Console.WriteLine("TEXT: " + text);
+                if (id.Contains("TextRank_"))
+                {
+                    Console.WriteLine(msg);
+                    string region = redisQueue.StringGet(id);
+                    var regionDb = ConnectionMultiplexer.Connect(REDIS_HOST).GetDatabase(Convert.ToInt32(region));
+                    
+                    string text = regionDb.StringGet(id);
+                    Console.WriteLine("IDENTIFICATOR: " + id);
+                    Console.WriteLine("REGION: " + region);
+                    Console.WriteLine("TEXT: " + text);
+                }
             });
             Console.WriteLine("TextListener");
             Console.ReadLine();

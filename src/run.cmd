@@ -20,7 +20,10 @@ cd TextStatistics
 start "TextStatistics" dotnet TextStatistics.dll
 cd ../  
 
-                                          
+cd TextProcessingLimiter
+start "TextProcessingLimiter" dotnet TextProcessingLimiter.dll
+cd ../  
+                                         
 set file=%CD%\Config\config.ini
 for /f "tokens=1,2 delims=:" %%a in (%file%) do (
 	for /l %%i in (1, 1, %%b) do start "%%a" /d %%a dotnet %%a.dll
